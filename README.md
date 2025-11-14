@@ -1,26 +1,109 @@
-# Turborepo starter
+# Concinnity
 
-This Turborepo starter is maintained by the Turborepo core team.
+> **Work Together, Brilliantly**
 
-## Using this example
+Concinnity is an all-in-one business management platform built for modern teams. It combines real-time chat, video conferencing, calendar management, and marketplace features into a unified, scalable solution.
 
-Run the following command:
+## 🏗️ Architecture
 
-```sh
-npx create-turbo@latest
+This is a **monorepo** built with [Turborepo](https://turborepo.com), designed for enterprise-scale applications.
+
+### Tech Stack
+
+- **Frontend**: Next.js 16 (App Router) + React 19 + Tailwind CSS
+- **Backend**: NestJS (Node.js) with microservices architecture
+- **Database**: Supabase PostgreSQL with Prisma ORM
+- **Authentication**: Clerk
+- **Package Manager**: pnpm
+- **Monorepo Tool**: Turborepo
+
+### Project Structure
+
+```
+concinnity/
+├── apps/
+│   ├── web/                    # Next.js frontend application
+│   ├── api-gateway/            # NestJS API Gateway (BFF pattern)
+│   └── docs/                   # Documentation site
+├── services/
+│   ├── auth/                   # Auth Service (Clerk webhooks)
+│   ├── chat/                   # Chat Service (WebSocket/Socket.io)
+│   ├── calendar/               # Calendar Service (Nylas integration)
+│   ├── video/                  # Video Service (Dyte/Daily.co)
+│   ├── marketplace/            # Marketplace Service (Stripe)
+│   └── analytics/              # Analytics Service
+├── packages/
+│   ├── database/               # Prisma schemas & Supabase client
+│   ├── ui/                     # Shared React components
+│   ├── types/                  # Shared TypeScript types
+│   ├── utils/                  # Shared utilities
+│   ├── eslint-config/          # Shared ESLint configuration
+│   └── typescript-config/      # Shared TypeScript configuration
+└── docs/                       # Project documentation
 ```
 
-## What's inside?
+## 🚀 Getting Started
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- Node.js 18+
+- pnpm (installed automatically)
+- Supabase account
+- Clerk account
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Installation
+
+1. **Install dependencies**
+
+```bash
+pnpm install
+```
+
+2. **Set up environment variables**
+
+Copy the example env files and fill in your credentials:
+
+```bash
+# Frontend
+cp apps/web/.env.example apps/web/.env.local
+
+# API Gateway
+cp apps/api-gateway/.env.example apps/api-gateway/.env
+
+# Database
+cp packages/database/.env.example packages/database/.env
+```
+
+3. **Set up the database**
+
+```bash
+# Generate Prisma client
+cd packages/database
+pnpm db:generate
+
+# Push schema to Supabase (for development)
+pnpm db:push
+
+# Or run migrations (for production)
+pnpm db:migrate
+```
+
+## 📦 Apps and Packages
+
+### Apps
+
+- **web**: Next.js frontend application with Clerk authentication and Tailwind CSS
+- **api-gateway**: NestJS API Gateway that orchestrates microservices
+- **docs**: Documentation site (Next.js)
+
+### Packages
+
+- **@concinnity/database**: Prisma client, schemas, and Supabase integration
+- **@concinnity/ui**: Shared React component library
+- **@concinnity/types**: Shared TypeScript types and interfaces
+- **@concinnity/utils**: Shared utility functions
+- **@concinnity/eslint-config**: Shared ESLint configuration
+- **@concinnity/typescript-config**: Shared TypeScript configuration
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
@@ -32,104 +115,138 @@ This Turborepo has some additional tools already setup for you:
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
 
+## 🛠️ Development
+
+### Run all apps in development mode
+
+```bash
+pnpm dev
+```
+
+This will start:
+- Frontend (web): http://localhost:3000
+- API Gateway: http://localhost:4000
+- API Documentation: http://localhost:4000/api/docs
+
+### Run specific apps
+
+```bash
+# Frontend only
+pnpm dev --filter=web
+
+# API Gateway only
+pnpm dev --filter=api-gateway
+
+# Multiple apps
+pnpm dev --filter=web --filter=api-gateway
+```
+
 ### Build
 
-To build all apps and packages, run the following command:
+Build all apps and packages:
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+pnpm build
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+Build specific app:
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+pnpm build --filter=web
 ```
 
-### Develop
+### Lint
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+pnpm lint
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### Type checking
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+pnpm check-types
 ```
 
-### Remote Caching
+### Database Commands
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```bash
+# Generate Prisma client
+pnpm --filter=@concinnity/database db:generate
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+# Push schema changes (development)
+pnpm --filter=@concinnity/database db:push
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+# Create and run migrations (production)
+pnpm --filter=@concinnity/database db:migrate
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# Open Prisma Studio
+pnpm --filter=@concinnity/database db:studio
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 🔐 Environment Variables
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### Frontend (apps/web/.env.local)
 
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://nqyudbywjkyydhiltcho.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# API Gateway
+NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### API Gateway (apps/api-gateway/.env)
+
+```env
+PORT=4000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+
+# Database
+DATABASE_URL="postgresql://postgres:[PASSWORD]@db.nqyudbywjkyydhiltcho.supabase.co:5432/postgres"
+DIRECT_URL="postgresql://postgres:[PASSWORD]@db.nqyudbywjkyydhiltcho.supabase.co:5432/postgres"
+
+# Clerk
+CLERK_SECRET_KEY=your_clerk_secret_key
+CLERK_WEBHOOK_SECRET=your_clerk_webhook_secret
 ```
 
-## Useful Links
+## 🏛️ Microservices Architecture
 
-Learn more about the power of Turborepo:
+Concinnity follows a microservices architecture pattern:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+1. **API Gateway (BFF)**: Acts as the Backend-for-Frontend, routing requests to appropriate microservices
+2. **Auth Service**: Handles Clerk webhook events and organization/user management
+3. **Chat Service**: Real-time messaging with WebSocket/Socket.io
+4. **Calendar Service**: Calendar and scheduling with Nylas API integration
+5. **Video Service**: Video conferencing with Dyte/Daily.co integration
+6. **Marketplace Service**: App marketplace with Stripe payment processing
+7. **Analytics Service**: Usage tracking and reporting
+
+## 📚 Documentation
+
+- API Documentation: http://localhost:4000/api/docs (when running)
+- [Turborepo Docs](https://turborepo.com/docs)
+- [Next.js Docs](https://nextjs.org/docs)
+- [NestJS Docs](https://docs.nestjs.com)
+- [Prisma Docs](https://www.prisma.io/docs)
+- [Clerk Docs](https://clerk.com/docs)
+- [Supabase Docs](https://supabase.com/docs)
+
+## 🤝 Contributing
+
+This is a private enterprise project. Please follow the established coding standards and submit pull requests for review.
+
+## 📝 License
+
+Proprietary - All rights reserved

@@ -1,0 +1,161 @@
+// Prisma schema for Concinnity
+// Database: Supabase PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// CORE MODELS
+// ============================================
+
+model Organization {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique // Clerk Organization ID
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  plan        Plan     @default(FREE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  channels    Channel[]
+  meetings    Meeting[]
+  
+  @@map("organizations")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  clerkId        String   @unique // Clerk User ID
+  email          String   @unique
+  firstName      String?
+  lastName       String?
+  avatarUrl      String?
+  role           Role     @default(MEMBER)
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages       Message[]
+  meetingsCreated Meeting[]   @relation("MeetingCreator")
+  meetingParticipants MeetingParticipant[]
+  
+  @@map("users")
+}
+
+// ============================================
+// CHAT MODELS
+// ============================================
+
+model Channel {
+  id             String      @id @default(cuid())
+  name           String
+  description    String?
+  type           ChannelType @default(PUBLIC)
+  organizationId String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages       Message[]
+  
+  @@map("channels")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  channelId String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("messages")
+}
+
+// ============================================
+// CALENDAR & MEETING MODELS
+// ============================================
+
+model Meeting {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  startTime      DateTime
+  endTime        DateTime
+  meetingUrl     String?  // Video conference URL
+  nylasEventId   String?  // Nylas Calendar Event ID
+  organizationId String
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy      User                 @relation("MeetingCreator", fields: [createdById], references: [id])
+  participants   MeetingParticipant[]
+  
+  @@map("meetings")
+}
+
+model MeetingParticipant {
+  id        String   @id @default(cuid())
+  meetingId String
+  userId    String
+  status    ParticipantStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  // Relations
+  meeting   Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([meetingId, userId])
+  @@map("meeting_participants")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum Plan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  GUEST
+}
+
+enum ChannelType {
+  PUBLIC
+  PRIVATE
+  DIRECT
+}
+
+enum ParticipantStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+

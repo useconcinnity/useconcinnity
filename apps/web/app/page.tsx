@@ -1,102 +1,78 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+import Link from 'next/link';
+import { auth } from '@clerk/nextjs/server';
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
+export default async function Home() {
+  const { userId } = await auth();
 
   return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <main className="container mx-auto px-4 py-16">
+        <div className="text-center">
+          <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-4">
+            Concinnity
+          </h1>
+          <p className="text-2xl text-gray-600 dark:text-gray-300 mb-8">
+            Work Together, Brilliantly
+          </p>
+          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12">
+            The all-in-one business management platform that brings your team together
+            with powerful tools for communication, collaboration, and productivity.
+          </p>
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+          <div className="flex gap-4 justify-center">
+            {userId ? (
+              <Link
+                href="/dashboard"
+                className="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/sign-up"
+                  className="px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+                >
+                  Get Started
+                </Link>
+                <Link
+                  href="/sign-in"
+                  className="px-8 py-3 bg-white text-indigo-600 rounded-lg font-semibold border-2 border-indigo-600 hover:bg-indigo-50 transition-colors"
+                >
+                  Sign In
+                </Link>
+              </>
+            )}
+          </div>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.com/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                Real-time Chat
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                Seamless communication with your team
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                Smart Calendar
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                Schedule and manage meetings effortlessly
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                Video Conferencing
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                High-quality video calls built-in
+              </p>
+            </div>
+          </div>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.com?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turborepo.com →
-        </a>
-      </footer>
     </div>
   );
 }
