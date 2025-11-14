@@ -291,12 +291,100 @@ Add custom domain: `chat.useconcinnity.com`
 
 ## 🌐 Step 8: Configure DNS (10 minutes)
 
-Go to your domain registrar (GoDaddy, Namecheap, Cloudflare, etc.) and add these CNAME records:
+**Important**: The root domain (`@` or apex) **cannot use CNAME records** - this is a DNS limitation!
 
-Railway will give you specific CNAME targets for each service. They'll look like:
+### Option A: Use A Records (Most Compatible)
+
+When you add `useconcinnity.com` as a custom domain in Railway, it will provide **A record IP addresses**.
+
+Go to your domain registrar and add:
+
+```
+Type: A
+Name: @
+Value: [Railway will show IP addresses like 76.76.21.21]
+TTL: 3600
+
+Type: CNAME
+Name: www
+Value: [your-web-service].up.railway.app
+TTL: 3600
+
+Type: CNAME
+Name: api
+Value: [your-api-gateway].up.railway.app
+TTL: 3600
+
+Type: CNAME
+Name: auth
+Value: [your-auth-service].up.railway.app
+TTL: 3600
+
+Type: CNAME
+Name: video
+Value: [your-video-service].up.railway.app
+TTL: 3600
+
+Type: CNAME
+Name: chat
+Value: [your-chat-service].up.railway.app
+TTL: 3600
+```
+
+### Option B: Use Cloudflare (Recommended - Easiest)
+
+If your DNS provider doesn't support ALIAS records or you want easier management:
+
+1. **Sign up for Cloudflare** (free): https://cloudflare.com
+2. **Add your domain**: `useconcinnity.com`
+3. **Update nameservers** at your domain registrar to Cloudflare's nameservers
+4. **Add DNS records in Cloudflare**:
 
 ```
 Type: CNAME
+Name: @
+Value: [your-web-service].up.railway.app
+Proxy status: Proxied (orange cloud icon)
+
+Type: CNAME
+Name: www
+Value: [your-web-service].up.railway.app
+Proxy status: Proxied
+
+Type: CNAME
+Name: api
+Value: [your-api-gateway].up.railway.app
+Proxy status: Proxied
+
+Type: CNAME
+Name: auth
+Value: [your-auth-service].up.railway.app
+Proxy status: Proxied
+
+Type: CNAME
+Name: video
+Value: [your-video-service].up.railway.app
+Proxy status: Proxied
+
+Type: CNAME
+Name: chat
+Value: [your-chat-service].up.railway.app
+Proxy status: Proxied
+```
+
+**Benefits of Cloudflare**:
+- ✅ CNAME flattening (works for root domain)
+- ✅ Free SSL
+- ✅ DDoS protection
+- ✅ CDN (faster loading)
+- ✅ Analytics
+
+### Option C: ALIAS Records (If Your Provider Supports It)
+
+Some DNS providers (DNSimple, DNS Made Easy, Route53) support ALIAS or ANAME records:
+
+```
+Type: ALIAS (or ANAME)
 Name: @
 Value: [your-web-service].up.railway.app
 
@@ -304,21 +392,7 @@ Type: CNAME
 Name: www
 Value: [your-web-service].up.railway.app
 
-Type: CNAME
-Name: api
-Value: [your-api-gateway].up.railway.app
-
-Type: CNAME
-Name: auth
-Value: [your-auth-service].up.railway.app
-
-Type: CNAME
-Name: video
-Value: [your-video-service].up.railway.app
-
-Type: CNAME
-Name: chat
-Value: [your-chat-service].up.railway.app
+[... rest of CNAME records for subdomains ...]
 ```
 
 **Note**: DNS propagation can take 5 minutes to 48 hours (usually ~15 minutes)
@@ -337,11 +411,13 @@ Value: [your-chat-service].up.railway.app
 ### Update Redirect URLs
 
 1. In Clerk Dashboard, go to **Paths**
-2. Update:
-   - Sign-in URL: `https://useconcinnity.com/sign-in`
-   - Sign-up URL: `https://useconcinnity.com/sign-up`
-   - After sign-in: `https://useconcinnity.com/dashboard`
-   - After sign-up: `https://useconcinnity.com/dashboard`
+2. Update (use relative paths, NOT full URLs):
+   - Sign-in page: `/sign-in`
+   - Sign-up page: `/sign-up`
+   - After sign-in: `/dashboard`
+   - After sign-up: `/dashboard`
+
+**Note**: Clerk automatically uses your configured domain (useconcinnity.com) with these paths.
 
 ---
 

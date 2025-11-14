@@ -107,16 +107,50 @@ FRONTEND_URL=https://useconcinnity.com
 
 ### 4. Configure DNS (2 min)
 
-Railway will give you CNAME targets. Add these to your domain registrar:
+**Important**: Root domain (`@`) cannot use CNAME records!
+
+#### Option A: Use A Records (Most Compatible)
+Railway will provide A record IP addresses when you add your custom domain:
 
 ```
-@ → [web-service].up.railway.app
-www → [web-service].up.railway.app
-api → [api-gateway].up.railway.app
-auth → [auth-service].up.railway.app
-video → [video-service].up.railway.app
-chat → [chat-service].up.railway.app
+Type: A
+Name: @
+Value: [Railway IP addresses - shown in Railway dashboard]
+
+Type: CNAME
+Name: www
+Value: [web-service].up.railway.app
+
+Type: CNAME
+Name: api
+Value: [api-gateway].up.railway.app
+
+Type: CNAME
+Name: auth
+Value: [auth-service].up.railway.app
+
+Type: CNAME
+Name: video
+Value: [video-service].up.railway.app
+
+Type: CNAME
+Name: chat
+Value: [chat-service].up.railway.app
 ```
+
+#### Option B: Use Cloudflare (Easiest)
+Transfer DNS to Cloudflare (free), then use CNAME for everything:
+
+```
+Type: CNAME, Name: @, Value: [web-service].up.railway.app, Proxy: ON
+Type: CNAME, Name: www, Value: [web-service].up.railway.app, Proxy: ON
+Type: CNAME, Name: api, Value: [api-gateway].up.railway.app, Proxy: ON
+Type: CNAME, Name: auth, Value: [auth-service].up.railway.app, Proxy: ON
+Type: CNAME, Name: video, Value: [video-service].up.railway.app, Proxy: ON
+Type: CNAME, Name: chat, Value: [chat-service].up.railway.app, Proxy: ON
+```
+
+Cloudflare automatically handles CNAME flattening for the root domain.
 
 ### 5. Update Clerk (2 min)
 
@@ -125,10 +159,11 @@ Go to https://dashboard.clerk.com:
 **Webhooks**:
 - Update URL to: `https://auth.useconcinnity.com/api/v1/webhooks/clerk`
 
-**Paths**:
-- Sign-in: `https://useconcinnity.com/sign-in`
-- Sign-up: `https://useconcinnity.com/sign-up`
-- After sign-in: `https://useconcinnity.com/dashboard`
+**Paths** (use relative paths, NOT full URLs):
+- Sign-in page: `/sign-in`
+- Sign-up page: `/sign-up`
+- After sign-in: `/dashboard`
+- After sign-up: `/dashboard`
 
 ---
 
