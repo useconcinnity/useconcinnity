@@ -101,6 +101,9 @@ model Meeting {
   endTime        DateTime
   meetingUrl     String?  // Video conference URL
   nylasEventId   String?  // Nylas Calendar Event ID
+  dyteRoomId     String?  @unique  // Dyte meeting ID
+  dyteRoomName   String?            // Dyte room name
+  status         MeetingStatus @default(SCHEDULED)
   organizationId String
   createdById    String
   createdAt      DateTime @default(now())
@@ -110,7 +113,7 @@ model Meeting {
   organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdBy      User                 @relation("MeetingCreator", fields: [createdById], references: [id])
   participants   MeetingParticipant[]
-  
+
   @@map("meetings")
 }
 
@@ -157,5 +160,12 @@ enum ParticipantStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
 }
 
