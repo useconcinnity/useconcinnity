@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cd ../.. && pnpm install && cd apps/api-gateway && pnpm build"
+    "buildCommand": "cd ../.. && pnpm install && pnpm turbo build --filter=api-gateway"
   },
   "deploy": {
-    "startCommand": "node dist/main.js",
+    "startCommand": "cd apps/api-gateway && node dist/main.js",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }

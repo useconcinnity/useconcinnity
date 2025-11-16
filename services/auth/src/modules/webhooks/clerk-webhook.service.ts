@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Webhook } from 'svix';
 import { prisma } from '@concinnity/database';
+import { Role } from '@prisma/client';
 
 interface ClerkWebhookEvent {
   type: string;
@@ -286,14 +287,14 @@ export class ClerkWebhookService {
   /**
    * Map Clerk role to our Role enum
    */
-  private mapClerkRoleToRole(clerkRole: string): string {
+  private mapClerkRoleToRole(clerkRole: string): Role {
     switch (clerkRole) {
       case 'org:admin':
-        return 'ADMIN';
+        return Role.ADMIN;
       case 'org:member':
-        return 'MEMBER';
+        return Role.MEMBER;
       default:
-        return 'MEMBER';
+        return Role.MEMBER;
     }
   }
 }

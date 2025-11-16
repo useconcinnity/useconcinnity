@@ -2,9 +2,10 @@
   "name": "@concinnity/database",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "prisma generate && tsc",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
@@ -15,6 +16,7 @@
     "@supabase/supabase-js": "^2.48.1"
   },
   "devDependencies": {
+    "@types/node": "^22.15.3",
     "prisma": "^6.2.0",
     "typescript": "5.9.2"
   }
