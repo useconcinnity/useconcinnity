@@ -3,6 +3,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 import "./globals.css";
 
+// Force dynamic rendering to avoid build-time Clerk validation
+export const dynamic = 'force-dynamic';
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
