@@ -4,10 +4,11 @@ import { prisma } from '@concinnity/database';
 
 export interface CreateMeetingDto {
   title: string;
+  description?: string;
   organizationId: string;
-  channelId?: string;
-  scheduledAt?: Date;
-  duration?: number;
+  createdById: string;
+  startTime?: Date;
+  endTime?: Date;
   recordOnStart?: boolean;
 }
 
@@ -35,14 +36,19 @@ export class VideoService {
         dto.recordOnStart || false,
       );
 
+      // Calculate end time (default 60 minutes from start)
+      const startTime = dto.startTime || new Date();
+      const endTime = dto.endTime || new Date(startTime.getTime() + 60 * 60 * 1000);
+
       // Save meeting to database
       const meeting = await prisma.meeting.create({
         data: {
           title: dto.title,
+          description: dto.description,
           organizationId: dto.organizationId,
-          channelId: dto.channelId,
-          scheduledAt: dto.scheduledAt || new Date(),
-          duration: dto.duration || 60,
+          createdById: dto.createdById,
+          startTime,
+          endTime,
           dyteRoomId: dyteMeeting.id,
           dyteRoomName: dyteMeeting.roomName,
           status: 'SCHEDULED',
@@ -114,8 +120,8 @@ export class VideoService {
         authToken: authToken.token,
         meeting: {
           title: meeting.title,
-          scheduledAt: meeting.scheduledAt,
-          duration: meeting.duration,
+          startTime: meeting.startTime,
+          endTime: meeting.endTime,
         },
       };
     } catch (error) {
@@ -136,7 +142,8 @@ export class VideoService {
             user: {
               select: {
                 id: true,
-                name: true,
+                firstName: true,
+                lastName: true,
                 email: true,
                 avatarUrl: true,
               },
