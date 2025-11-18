@@ -17,7 +17,8 @@ COPY services ./services
 RUN pnpm install --no-frozen-lockfile
 
 # Build all projects
-RUN pnpm turbo build
+
+RUN pnpm --filter docs build
 
 # This Dockerfile is used by Railway to build all services
 # The specific service to run is determined by the startCommand in railway.json
