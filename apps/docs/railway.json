@@ -5,7 +5,6 @@
     "dockerfilePath": "apps/docs/Dockerfile"
   },
   "deploy": {
-    "startCommand": "cd apps/docs && pnpm start",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
