@@ -10,6 +10,11 @@ interface CreateMeetingButtonProps {
   className?: string;
 }
 
+const VIDEO_API_BASE_URL =
+  process.env.NEXT_PUBLIC_VIDEO_URL ??
+  process.env.NEXT_PUBLIC_VIDEO_SERVICE_URL ??
+  process.env.NEXT_PUBLIC_API_URL;
+
 export function CreateMeetingButton({
   organizationId,
   channelId,
@@ -26,11 +31,16 @@ export function CreateMeetingButton({
       return;
     }
 
+    if (!VIDEO_API_BASE_URL) {
+      setError('Video service URL is not configured.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/meetings`, {
+      const response = await fetch(`${VIDEO_API_BASE_URL}/api/v1/meetings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,6 +49,7 @@ export function CreateMeetingButton({
           title: `Meeting by ${user.fullName || user.firstName}`,
           organizationId,
           channelId,
+          createdById: user.id,
           scheduledAt: new Date().toISOString(),
           duration: 60,
           recordOnStart: false,
@@ -46,11 +57,12 @@ export function CreateMeetingButton({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create meeting');
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || 'Failed to create meeting');
       }
 
       const data = await response.json();
-      
+
       if (onMeetingCreated) {
         onMeetingCreated(data.id);
       }
@@ -84,4 +96,3 @@ export function CreateMeetingButton({
     </div>
   );
 }
-

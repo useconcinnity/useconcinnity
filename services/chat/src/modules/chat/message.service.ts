@@ -16,6 +16,19 @@ export class MessageService {
    */
   async createMessage(dto: CreateMessageDto) {
     try {
+      const [channel, user] = await Promise.all([
+        prisma.channel.findUnique({ where: { id: dto.channelId } }),
+        prisma.user.findUnique({ where: { id: dto.userId } }),
+      ]);
+
+      if (!channel) {
+        throw new NotFoundException('Channel not found');
+      }
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
       const message = await prisma.message.create({
         data: {
           content: dto.content,
@@ -34,7 +47,9 @@ export class MessageService {
         },
       });
 
-      this.logger.log(`Created message: ${message.id}`);
+      this.logger.log(
+        `Created message ${message.id} in channel ${channel.id} by user ${user.id}`,
+      );
       return message;
     } catch (error) {
       this.logger.error('Error creating message', error);

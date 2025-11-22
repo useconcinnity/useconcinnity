@@ -51,7 +51,7 @@ export const createApiResponse = <T>(
   success: boolean,
   data?: T,
   error?: string,
-  message?: string
+  message?: string,
 ) => {
   return {
     success,
@@ -60,4 +60,6 @@ export const createApiResponse = <T>(
     message,
   };
 };
+
+export * from './permissions';
 
